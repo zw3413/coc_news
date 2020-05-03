@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import Vue before Element -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <style>
+        body, h1 {
+            border:0;
+            margin:0;
+            padding:0;
+        }
+        h1{
+            line-height: 80px;
+        }
+        .card {
+            display: none;
+
+        }
+
+        .card:first {
+            display: block
+        }
+
+        .nav_item {
+            display: block
+        }
+        li {
+            list-style: none;
+        }
+
+        [v-cloak] {
+            display: none
+        }
+
+        .edit {
+            display: none
+        }
+    </style>
+</head>
+
+<body>
+    <div style="height: 80px; width:100%; background-color: darkslateblue;color:floralwhite">
+        <h1>yahoo news</h1>
+    </div>
+    <div style="position:absolute;top:80px;bottom: 0; width:100%">
+        <div style="position:absolute;left:0;right:90%;top:0;bottom:0;background-color: bisque;">
+            <label key="us_yahoo_news" class="nav_item">
+              <a href="#">美国雅虎新闻</a>  
+            </label>
+            <label key="us_yahoo_home" class="nav_item">
+                <a href="#">美国雅虎首页</a> 
+            </label>
+            <label key="us_yahoo_lifestyle" class="nav_item">
+                <a href="#">美国雅虎生活方式</a> 
+            </label>
+        </div>
+        <div style="position:absolute;left:10%;right:0;top:0;bottom:0; background-color: darkgray; overflow:scroll">
+            <div id="us_yahoo_news" class="card">
+                {% include "us_yahoo_news.html" %}
+            </div>
+            <div id="us_yahoo_home" class="card">
+                {% include "us_yahoo_home.html" %}
+            </div>
+            <div id="us_yahoo_lifestyle" class="card">
+                {% include "us_yahoo_lifestyle.html" %}
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</body>
+<script>
+    $('.nav_item').click(function (event) {
+        debugger
+        $('.card').hide();
+        var key=$(event.target).parents('.nav_item').attr('key')
+        $("#"+key).show()
+    })
+</script>
+
+</html>

@@ -31,14 +31,15 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'TestModel',
-    'corsheaders'
+    'rest_framework',
+    'news'
 ]
 
 MIDDLEWARE = [
@@ -49,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
@@ -80,7 +81,13 @@ WSGI_APPLICATION = 'yahoonews.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'yahoo',
+        # 'USER': 'dbyang',
+        # 'PASSWORD': 'pg@1989',
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '5432',
+         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'test',
         'USER': 'root',
         'PASSWORD': '123',
@@ -127,3 +134,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = BASE_DIR+'/static/'
+
+# 定时任务
+CRONJOBS = [
+    ('*/5 * * * *', 'news.views.auto_task')
+]
