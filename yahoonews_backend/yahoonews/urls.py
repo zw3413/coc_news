@@ -21,10 +21,13 @@ from news.serializers import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('test/',test),
     path('profile/', ProfileList.as_view(), name='profile_list'),
     re_path('profile/(?P<pk>[0-9]+)/', ProfileDetail.as_view(), name='profile_detail'),
     path('pageen/', PageENList.as_view(), name='pageen_list'),
     re_path('pageen/(?P<pk>[0-9]+)/', PageENList.as_view(), name='pageen_detail'),
     path('pagecn/', PageCNList.as_view(), name='pagecn_list'),
     re_path('pagecn/(?P<pk>[0-9]+)/', PageCNDetail.as_view(), name='pagecn_detail'),
+    path('article/', ArticleList.as_view(), name='article_list'),
+    re_path('article/(?P<pk>[0-9]+)/', ArticleDetail.as_view(), name='article_detail'),
 ]

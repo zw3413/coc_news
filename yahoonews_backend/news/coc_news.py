@@ -1,6 +1,11 @@
+# -*- coding: UTF-8 -*-
 from lxml import etree
 import requests
 from bs4 import BeautifulSoup
+import codecs
+import feedparser
+import json
+import logging
 
 headers= {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36',
 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -14,7 +19,7 @@ headers= {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/53
 'sec-fetch-user': '?1',
 'upgrade-insecure-requests': '1'}
 
-# 数据采集
+# 解析url
 def collect_url(profile,mode="css"):
     if(mode == 'css'):
         collect_url_via_css(profile)
@@ -43,9 +48,26 @@ def collect_url_via_css(profile):
             urls.append(u)
     return urls
 
+def collect_article_via_rss(profiles):
+    articles=[]
+    for profile in profiles:
+        logging.info(profile)
+        url = profile.rss_url
+        res = requests.get(url, headers=headers)
+        res.encoding = 'utf-8'
+        feed=feedparser.parse(res.text)    
+        print(profile.name)
+        for entry in feed.entries:
+            entry['profile_name']=profile.name
+            articles.append(entry)
+    return articles
+
 if __name__ == "__main__":
     profile={
         'first_page' : 'https://news.yahoo.com/world/',
-        'url_selector' :'#Main li'
+        'url_selector' :'#Main li',
+        'rss_url':'https://www.yahoo.com/news/rss'
     }
-    collect_url(profile)
+    #collect_url(profile)
+    a=collect_article_via_rss(profile)
+    print(a)
