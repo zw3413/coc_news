@@ -5,13 +5,13 @@
         <el-form-item label="模板名称">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-         <el-form-item label="模板标题">
+        <el-form-item label="模板标题">
           <el-input v-model="form.title"></el-input>
         </el-form-item>
-         <el-form-item label="索引页链接">
+        <el-form-item label="索引页链接">
           <el-input v-model="form.firstPage"></el-input>
         </el-form-item>
-         <el-form-item label="链接选择器">
+        <el-form-item label="链接选择器">
           <el-input v-model="form.urlSelector"></el-input>
         </el-form-item>
         <el-form-item label="标题选择器">
@@ -38,6 +38,7 @@
       <el-table-column prop="titleSelector" label="标题选择器"></el-table-column>
       <el-table-column prop="authorSelector" label="作者选择器"></el-table-column>
       <el-table-column prop="contentSelector" label="正文选择器"></el-table-column>
+      <el-table-column prop="rss_url" label="RSS"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-button @click="edit(scope.row)" type="text" size="small">编辑</el-button>
@@ -48,68 +49,70 @@
   </div>
 </template>
 <script>
+import {getList} from '../api/profile'
 export default {
   data() {
     return {
       list: [],
       form: {
         name: "",
-        title:'',
-        firstPage:'',
-        urlSelector:'',
+        title: "",
+        firstPage: "",
+        urlSelector: "",
         titleSelector: "",
         authorSelector: "",
-        contentSelector: ""
+        contentSelector: "",
+        rss_url:""
       }
     };
   },
   methods: {
-    deleteItem(row){
-      var name=row.name;
-      fetch("http://192.168.31.144:8000/deleteProfile?name="+name)
-      .then(resp=>resp.text())
-      .then(json=>{
-        var result=JSON.parse(json)
-        if(result.code=='200'){
-          alert('删除成功')
-          this.fetchList()
-        }else{
-          alert('删除失败')
-        }
-      })
+    deleteItem(row) {
+      var name = row.name;
+      fetch("http://192.168.31.144:8000/deleteProfile?name=" + name)
+        .then(resp => resp.text())
+        .then(json => {
+          var result = JSON.parse(json);
+          if (result.code == "200") {
+            alert("删除成功");
+            this.fetchList();
+          } else {
+            alert("删除失败");
+          }
+        });
     },
     edit(row) {
       this.form = {
         name: row.name,
         title: row.title,
-        firstPage:row.firstPage,
-        urlSelector:row.urlSelector,
+        firstPage: row.firstPage,
+        urlSelector: row.urlSelector,
         titleSelector: row.titleSelector,
         authorSelector: row.authorSelector,
-        contentSelector: row.contentSelector
+        contentSelector: row.contentSelector,
+        rss_url:row.rss_url
       };
     },
     fetchList() {
       this.list = [];
-      fetch("http://192.168.31.144:8000/queryProfile")
-        .then(resp => resp.text())
-        .then(json => {
-          var result = JSON.parse(json);
-          if (result.code == "200") {
-            var data = JSON.parse(result.data);
-            for (var i in data) {
-              var val = data[i];
-              var obj = {
-                name: val.fields.name,
-                title:val.fields.title,
-                firstPage:val.fields.first_page,
-                urlSelector:val.fields.url_selector,
-                titleSelector: val.fields.title_selector,
-                authorSelector: val.fields.author_selector,
-                contentSelector: val.fields.content_selector
-              };
-              this.list.push(obj);
-            }
+      getList()
+        .then(result => {
+          //console.log(result)
+          //var data = JSON.parse(result);
+          var data=result
+          for (var i in data) {
+            var val = data[i];
+            var obj = {
+              name: val.name,
+              title: val.title,
+              firstPage: val.first_page,
+              urlSelector: val.url_selector,
+              titleSelector: val.title_selector,
+              authorSelector: val.author_selector,
+              contentSelector: val.content_selector,
+              rss_url:val.rss_url
+            };
+            this.list.push(obj);
           }
         });
     },
@@ -123,9 +126,9 @@ export default {
           if (result.code == "200") {
             this.form = {
               name: "",
-              title:'',
-              firstPage:'',
-              urlSelector:'',
+              title: "",
+              firstPage: "",
+              urlSelector: "",
               titleSelector: "",
               authorSelector: "",
               contentSelector: ""

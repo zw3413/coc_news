@@ -32,18 +32,26 @@ def auto_task():
     #urls=collect_url(profile)
     execCollectArticleViaRss()
     #collect_page(profile)
-    execTranslate()
+    #execTranslate()
     pass
 
 # 自动翻译
 def execTranslate():
-    pass
-
-
+    print(now()+u'--执行自动翻译任务')
+    articles=Article.objects.filter(process_status = 0)
+    for article in articles:
+        cnArticleJson={}
+        for key in article.keySet():
+            if(key == 'title' or key == 'summary'):
+                enText=article[key]
+                cnTextJson=translate_english_to_Chinese(enText)
+                cnArticleJson[key]=cnTextJson
+        a=Article_translation(**cnArticleJson)
+        a.save()        
 
 # 自动收集rss数据
 def execCollectArticleViaRss():
-    print('执行rss收集任务')
+    print(now()+u'--执行rss收集任务')
     profiles=Profile.objects.filter(~Q(rss_url =''))
     articles=collect_article_via_rss(profiles)
     #logging.info(articles)
@@ -59,8 +67,8 @@ def execCollectArticleViaRss():
             'description':article.description if article.has_key('description') else '',
             'link':article.link if article.has_key('link') else '',
             'pub_date':article.published if article.has_key('published') else '',
-            'source':article.source.href if article.has_key('source') else '',
-            'source_url':article.source.title if article.has_key('source') else '',
+            'source':article.source.title if article.has_key('source') else '',
+            'source_url':article.source.href if article.has_key('source') else '',
             'media_content':article.media_content if article.has_key('media_content') else '',
             'profile_name': article.profile_name
             #'media_text':article.media_text
@@ -80,7 +88,7 @@ def test(request):
 
 
 class ArticleList(generics.ListCreateAPIView):
-    queryset=Article.objects.all()
+    queryset=Article.objects.all().order_by('-update_time')
     serializer_class=ArticleSerializer
     #filter_fields=('','')
     def get(self,request,*args,**kwargs):

@@ -1,0 +1,104 @@
+<template>
+  <div style>
+    <el-table :data="tableData" style="width: 100%">
+      <el-table-column prop="media_content" label="media_content" width="200px">
+        <template slot-scope="scope">
+          <ul>
+            <li v-for="media in scope.row.media_content" :key="media.url">
+              <img
+                :src="media.url"
+                :height="media.height"
+                :width="media.width"
+                :alt="scope.row.media_text"
+              />
+            </li>
+          </ul>
+          <!-- <p v-html="scope.row.media_content"></p> -->
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="id">
+        <template slot-scope="scope">
+          <span :title="scope.row.guid">{{scope.row.id}}</span>
+        </template>
+      </el-table-column>-->
+      <el-table-column label="title">
+        <template slot-scope="scope">
+          <p>
+            <a
+              v-bind:href="scope.row.link"
+              v-bind:title="scope.row.link"
+              target="_blank"
+            >{{scope.row.title}}</a>
+          </p>
+          <p>
+            <span>{{scope.row.pub_date}}</span>
+          </p>
+          <p>
+            <a
+              :href="scope.row.source_url"
+              :title="scope.row.source_url"
+              target="_blank"
+            >{{scope.row.source}}</a>
+          </p>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column prop="summary" label="summary"></el-table-column>
+      <el-table-column prop="description" label="description"></el-table-column>-->
+      <!-- <el-table-column prop="link" label="link"></el-table-column> -->
+      <!-- <el-table-column prop="pub_date" label="pub_date"></el-table-column> -->
+      <!-- <el-table-column prop="source" label="source">
+        <template slot-scope="scope">
+          <a
+            :href="scope.row.source_url"
+            :title="scope.row.source_url"
+            target="_blank"
+          >{{scope.row.source}}</a>
+        </template>
+      </el-table-column>-->
+      <!-- <el-table-column prop="source_url" label="source_url"></el-table-column> -->
+      <!-- <el-table-column prop="guid" label="guid"></el-table-column> -->
+
+      <!-- <el-table-column prop="media_text" label="media_text"></el-table-column> -->
+      <!-- <el-table-column prop="profile_name" label="profile_name"></el-table-column> -->
+      <!-- <el-table-column prop="update_time" label="update_time"></el-table-column> -->
+    </el-table>
+  </div>
+</template>
+<script>
+//import {urlEncode} from '../utils/common_util'
+import { getList } from "../api/article";
+export default {
+  data() {
+    return {
+      params: {},
+      tableData: []
+    };
+  },
+  methods: {
+    fetchList: function() {
+      getList(this.params).then(data => {
+        data.forEach(function(v) {
+          v.title=url
+          v.media_content = eval(v.media_content);
+          if (v.media_content) {
+            v.media_content.forEach(c => {
+              if (typeof c.width == "undefined") c.width = "130";
+              if (typeof c.height == "undefined") c.height = "90";
+            });
+          }
+        });
+        this.tableData = data;
+      });
+    }
+  },
+  computed: {},
+  mounted: function() {
+    this.fetchList();
+  }
+};
+</script>
+<style scoped>
+li {
+  list-style-type: none;
+}
+</style>

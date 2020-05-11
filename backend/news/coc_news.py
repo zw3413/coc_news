@@ -55,14 +55,63 @@ def collect_article_via_rss(profiles):
         url = profile.rss_url
         res = requests.get(url, headers=headers)
         res.encoding = 'utf-8'
+        #解析返回的feed
         feed=feedparser.parse(res.text)    
+        
         print(profile.name)
         for entry in feed.entries:
+            #为所有feed添加profile name
             entry['profile_name']=profile.name
+            #获取其文章正文
+            if(entry.has_key('link') and len(entry['link'] )>0):
+                
+                 # 根据profile获取选择器
+                if(profile.has_key('rss_url')):
+                    #rss类型的去Article_Selector_Website
+                    selector=get_selector_via_source(entry.source.href)
+
+                content=get_article_content_via_profile_and_link(profile,entry['link'])
+                entry['content']=content
             articles.append(entry)
     return articles
+def get_article_content_via_profile_and_link(selector,link):
+    response=requests.get(link,headers=header)
+    response.encoding='UTF-8'
+    soup=BeautifuleSoup(response.text,'html.parser')
+    print(soup.prettify())
+    if(profile.has_key('content_selector')):
+        if selector.has_key("content_selector"):    
+            print('开始采集正文')
+            content_selector= selector.content_selector
+            content=soup.select(profile.content_selector)
+        else:
+            print('没有检测到正文选择器')
+            content=''    
+        print(content)
+    pass
+def get_selector_via_source(url):
+    selector=Article_Selector_Website.objects.get(website_url=url)
+    return selector
+    pass
+def test_get_selector_via_source():
+    url=''
+    selector=get_selector_via_source(url)
+    print(json.dumps(selector))
 
-if __name__ == "__main__":
+def test_get_content_via_profile_and_link():
+    profile={
+        'content_selector':''
+    }
+    link='https://www.politico.com/news/2020/05/04/mccarthy-mcconnell-testing-coronavirus-233984'
+    content=get_article_content_via_profile_and_link(profile,link)
+    return content
+    pass
+
+def translate_english_to_Chinese():
+    pass
+
+
+def test_collect_article_via_rss():
     profile={
         'first_page' : 'https://news.yahoo.com/world/',
         'url_selector' :'#Main li',
@@ -71,3 +120,8 @@ if __name__ == "__main__":
     #collect_url(profile)
     a=collect_article_via_rss(profile)
     print(a)
+
+if __name__ == "__main__":
+    #test_collect_article_via_rss()
+    test_get_content_via_profile_and_link()
+    pass

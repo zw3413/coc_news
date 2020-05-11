@@ -1,6 +1,24 @@
 from django.db import models
 
 
+#网站文章解析器
+class Article_Selector_Website(models.Model):
+    website_url=models.CharField(max_length=200,default='')
+    title_selector=models.CharField(max_length=200,default='')
+    author_selector=models.CharField(max_length=200,default='')
+    content_selector=models.CharField(max_length=200,default='')
+
+
+#翻译和处理后的文章
+class Article_translation(models.Model):
+    guid=models.CharField(max_length=200,default='')
+    title=models.CharField(max_length=200,default='')
+    summary=models.TextField(max_length=500000,default='')
+    description=models.TextField(max_length=50000,default='')
+    type=models.CharField(max_length=20,default='')
+    update_time=models.TimeField(auto_now=True)
+    content=models.TextField(max_length=5000000,default='')
+
 #RSS文章
 class Article(models.Model):
     #id=models.CharField(max_length=200,default='',primary_key=True)
@@ -16,6 +34,8 @@ class Article(models.Model):
     media_text=models.TextField(max_length=50000,default='')
     profile_name=models.CharField(max_length=200,default='')
     update_time=models.TimeField(auto_now=True)
+    process_status=models.IntegerField(default=0)
+    content=models.TextField(max_length=5000000,default='')
 
 # 文章
 class PageEN(models.Model):

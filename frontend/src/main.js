@@ -11,11 +11,12 @@ Vue.config.productionTip = false
 //配置路由
 // 1. 定义 (路由) 组件。
 import ProfileMnage from './components/ProfileManage.vue'
+import Article from './components/Article.vue'
 
 // 2. 定义路由
 const routes = [
   { path: '/createProfile', component: ProfileMnage, meta:{title:'配置管理',icon:'el-icon-setting'} },
-
+  { path: '/article', component: Article, meta:{title:'文章列表',icon:'el-icon-document'} }
 ]
 // 3. 创建 router 实例，然后传 `routes` 配置
 const router = new VueRouter({
