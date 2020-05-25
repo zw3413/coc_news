@@ -1,12 +1,16 @@
 from django.db import models
-
+from news.BaseModel import BaseModel
 
 #网站文章解析器
-class Article_Selector_Website(models.Model):
+class Article_Selector_Website(BaseModel):
     website_url=models.CharField(max_length=200,default='')
-    title_selector=models.CharField(max_length=200,default='')
-    author_selector=models.CharField(max_length=200,default='')
-    content_selector=models.CharField(max_length=200,default='')
+    title_selector=models.CharField(max_length=200,default='',null=True,blank=True)
+    author_selector=models.CharField(max_length=200,default='',null=True,blank=True)
+    content_selector=models.CharField(max_length=200,default='',null=True,blank=True)
+    
+    def get_selector_by_url(url):
+        result= Article_Selector_Website.objects.get(website_url__contains = url ).getDict() 
+        return result
 
 
 #翻译和处理后的文章
@@ -20,7 +24,7 @@ class Article_translation(models.Model):
     content=models.TextField(max_length=5000000,default='')
 
 #RSS文章
-class Article(models.Model):
+class Article(BaseModel):
     #id=models.CharField(max_length=200,default='',primary_key=True)
     title=models.CharField(max_length=200,default='')
     summary=models.TextField(max_length=500000,default='')
@@ -36,6 +40,15 @@ class Article(models.Model):
     update_time=models.TimeField(auto_now=True)
     process_status=models.IntegerField(default=0)
     content=models.TextField(max_length=5000000,default='')
+    type=models.CharField(max_length=10,default='')
+
+    def getRssArticleWithoutContent():
+        aJson=[]
+        articles=Article.objects.filter(type='rss',content='')
+        for a in articles:
+            aJson.append(a.getDict())
+        return aJson
+
 
 # 文章
 class PageEN(models.Model):
@@ -67,7 +80,7 @@ class PageCN(models.Model):
 
 
 # 文章配置
-class Profile(models.Model):
+class Profile(BaseModel):
     name=models.CharField(max_length=200,default='')
     title=models.CharField(max_length=200,default='')
     first_page=models.CharField(max_length=200,default='')

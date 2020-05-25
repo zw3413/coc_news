@@ -96,7 +96,10 @@ DATABASES = {
         'PASSWORD': '123',
         'HOST':'localhost',
         'PORT':'3306',
-        
+        'TEST': {
+                'CHARSET': 'utf8',
+                'COLLATION': 'utf8_general_ci',
+            }
         #'ENGINE': None
     }
 }
@@ -127,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 

@@ -21,3 +21,8 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = '__all__'
+
+class ArticleTranslationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Article_translation
+        fields='__all__'        

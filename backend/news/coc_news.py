@@ -6,6 +6,8 @@ import codecs
 import feedparser
 import json
 import logging
+import sys
+from news.coc_news_translate import *
 
 headers= {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36',
 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -18,6 +20,50 @@ headers= {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/53
 'sec-fetch-site': 'none',
 'sec-fetch-user': '?1',
 'upgrade-insecure-requests': '1'}
+
+def translate_article_with_engine(enArticle,engine):
+    keyToTranslate=['title','summary','content']
+    zhArticle={}
+    fields=enArticle._meta.fields
+    if engine=='google':
+        for f in fields:
+            if f.name in keyToTranslate:
+                zhArticle[f.name]=translate_by_google(enArticle.__getattribute__(f.name) )
+    elif engine == 'ali':
+        for f in fields:
+            if f.name in keyToTranslate:
+                zhArticle[f.name]=translate_by_ali(enArticle.__getattribute__(f.name) )
+    elif engine == 'youdao':
+        for f in fields:
+            if f.name in keyToTranslate:
+                zhArticle[f.name]=translate_by_youdao(enArticle.__getattribute__(f.name) )
+    elif engine == 'bing':            
+        for f in fields:
+            if f.name in keyToTranslate:
+                zhArticle[f.name]=translate_by_bing(enArticle.__getattribute__(f.name) )
+    return zhArticle
+
+def fetchRssArticleContent():
+    from news.models import Article
+    from urllib.parse import urlparse
+    #获取尚未获取正文的RSS文章列表
+    articles=Article.getRssArticleWithoutContent()
+    for article in articles:
+        #只处理有link字段的article,
+        if(('link' in article) and  ( len(article['link'])>0 )):
+            link=article['link']
+
+            selector=get_selector_via_source(article['source_url'])
+            if(not( any(selector) and len(selector)>0 ) ):
+                res=urlparse(link)
+                selector=get_selector_via_source(res.scheme+'://'+res.netloc)        
+
+            content=get_article_content_via_selector_and_link(selector,link)
+            article['content']=content
+            a=Article(**article)
+            a.save()
+            logging.info("获取和保存文章正文成功"+article['title'])
+    
 
 # 解析url
 def collect_url(profile,mode="css"):
@@ -51,65 +97,64 @@ def collect_url_via_css(profile):
 def collect_article_via_rss(profiles):
     articles=[]
     for profile in profiles:
+        profile=profile.getDict()
         logging.info(profile)
-        url = profile.rss_url
-        res = requests.get(url, headers=headers)
-        res.encoding = 'utf-8'
-        #解析返回的feed
-        feed=feedparser.parse(res.text)    
-        
-        print(profile.name)
-        for entry in feed.entries:
-            #为所有feed添加profile name
-            entry['profile_name']=profile.name
-            #获取其文章正文
-            if(entry.has_key('link') and len(entry['link'] )>0):
-                
-                 # 根据profile获取选择器
-                if(profile.has_key('rss_url')):
-                    #rss类型的去Article_Selector_Website
-                    selector=get_selector_via_source(entry.source.href)
-
-                content=get_article_content_via_profile_and_link(profile,entry['link'])
-                entry['content']=content
-            articles.append(entry)
-    return articles
-def get_article_content_via_profile_and_link(selector,link):
-    response=requests.get(link,headers=header)
-    response.encoding='UTF-8'
-    soup=BeautifuleSoup(response.text,'html.parser')
-    print(soup.prettify())
-    if(profile.has_key('content_selector')):
-        if selector.has_key("content_selector"):    
-            print('开始采集正文')
-            content_selector= selector.content_selector
-            content=soup.select(profile.content_selector)
+        url = profile['rss_url']
+        try:
+            res = requests.get(url, headers=headers,timeout=5)
+        except:
+            logging.info('请求超时：'+ url)
         else:
-            print('没有检测到正文选择器')
-            content=''    
-        print(content)
-    pass
+            res.encoding = 'utf-8'
+            #解析返回的feed
+            feed=feedparser.parse(res.text)    
+            
+            #print(profile.name)
+            #print(profile.rss_url)
+            #print(type(profile))
+            for entry in feed.entries:
+                #为所有feed添加profile name
+                entry['profile_name']=profile['name']
+            articles.append(entry)    
+    return articles
+
+# 根据文章链接和CSS选择器来获取文章内容
+def get_article_content_via_selector_and_link(selector,link):
+    response=requests.get(link,headers=headers,timeout=10)
+    response.encoding='UTF-8'
+    soup=BeautifulSoup(response.text,'html.parser')
+    #print(soup.prettify())
+    content=''
+    result = ''
+    if('content_selector' in selector):
+        print('采集正文:'+link)
+        content=soup.select(selector['content_selector'])
+    else:
+        print('没有检测到正文选择器:'+link)  
+
+    if(str(type(content))== "<class 'bs4.element.ResultSet'>"):
+        for c in content:
+            result = result + str(c)
+    else:
+        result=content    
+    return result
+    
+#根据文章来源查询CSS选择器    
 def get_selector_via_source(url):
-    selector=Article_Selector_Website.objects.get(website_url=url)
+    from news.models import Article_Selector_Website
+    try:
+        selector=Article_Selector_Website.get_selector_by_url(url)
+        logging.info("找到selector:"+url)
+    except:
+        selector=''
+        logging.error("未找到"+url+"的selector:"+str(sys.exc_info()[0]))
     return selector
-    pass
-def test_get_selector_via_source():
-    url=''
-    selector=get_selector_via_source(url)
-    print(json.dumps(selector))
+    
 
-def test_get_content_via_profile_and_link():
-    profile={
-        'content_selector':''
-    }
-    link='https://www.politico.com/news/2020/05/04/mccarthy-mcconnell-testing-coronavirus-233984'
-    content=get_article_content_via_profile_and_link(profile,link)
-    return content
+def translate_english_to_Chinese(enText):
+    #翻译引擎一：阿里翻译API
+    
     pass
-
-def translate_english_to_Chinese():
-    pass
-
 
 def test_collect_article_via_rss():
     profile={
@@ -121,7 +166,15 @@ def test_collect_article_via_rss():
     a=collect_article_via_rss(profile)
     print(a)
 
+def test_get_content_via_selector_and_link():
+    link='https://www.politico.com/news/2020/05/04/mccarthy-mcconnell-testing-coronavirus-233984'
+    selector = get_selector_via_source('https://www.politico.com/')
+    content=get_article_content_via_selector_and_link(selector,link)
+    print(content)
+    return content
+
 if __name__ == "__main__":
     #test_collect_article_via_rss()
-    test_get_content_via_profile_and_link()
+    #test_get_content_via_profile_and_link()
+    #test_get_selector_via_source()
     pass
