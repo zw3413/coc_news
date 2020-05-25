@@ -53,7 +53,8 @@ export default {
 }
 
 .el-container {
-  height: 100%;
+  height: calc( 100% - 0px);
+  overflow-y: hidden;
 }
 
 </style>

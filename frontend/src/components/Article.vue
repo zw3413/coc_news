@@ -24,11 +24,14 @@
       <el-table-column label="title">
         <template slot-scope="scope">
           <p>
+            {{scope.row.title}}
+            &nbsp;&nbsp;&nbsp;&nbsp;
             <a
-              v-bind:href="scope.row.link"
-              v-bind:title="scope.row.link"
-              target="_blank"
-            >{{scope.row.title}}</a>
+              v-if="scope.row.content && scope.row.content != ''"
+              @click="showContent(scope.row.content)"
+            >正文</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a v-bind:href="scope.row.link" v-bind:title="scope.row.link" target="_blank">原文链接</a>
           </p>
           <p>
             <span>{{scope.row.pub_date}}</span>
@@ -62,6 +65,20 @@
       <!-- <el-table-column prop="profile_name" label="profile_name"></el-table-column> -->
       <!-- <el-table-column prop="update_time" label="update_time"></el-table-column> -->
     </el-table>
+
+    <el-dialog 
+    title="正文" 
+    :visible.sync="dialogVisible"  
+    width="90%"
+  
+    >
+      <div v-html="article_content">
+      </div>
+      <!-- <div slot="footer" class="dialog-footer">
+        <el-button @click.native="dialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="addLoading">提交</el-button>
+      </div> -->
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -70,15 +87,22 @@ import { getList } from "../api/article";
 export default {
   data() {
     return {
+      article_content:'',
       params: {},
-      tableData: []
+      tableData: [],
+      dialogVisible: false, //模态框是否显示
+      addLoading: false //是否显示loading
     };
   },
   methods: {
+    opendialog: function() {
+      //代开模态框
+      this.dialogVisible = false;
+    },
     fetchList: function() {
       getList(this.params).then(data => {
         data.forEach(function(v) {
-          v.title=url
+          //v.title=url
           v.media_content = eval(v.media_content);
           if (v.media_content) {
             v.media_content.forEach(c => {
@@ -89,6 +113,16 @@ export default {
         });
         this.tableData = data;
       });
+    },
+    showContent: function(content) {
+      this.article_content=content
+      this.dialogVisible=true
+      // this.$alert(content, "正文", {
+      //   dangerouslyUseHTMLString: true,
+      //   center: true,
+      //   customClass: "article-content",
+      //   showConfirmButton: false
+      // });
     }
   },
   computed: {},
@@ -97,8 +131,11 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 li {
   list-style-type: none;
+}
+.article-content {
+  width: 90% !important;
 }
 </style>

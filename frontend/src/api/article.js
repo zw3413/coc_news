@@ -9,3 +9,9 @@ export function getList(params) {
     })
 
 }
+
+// export function getContent(title){
+//     return request({
+//         url:'http://192.168.19.128:8000/'
+//     })
+// }
