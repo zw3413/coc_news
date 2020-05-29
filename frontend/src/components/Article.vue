@@ -65,7 +65,9 @@
       <!-- <el-table-column prop="profile_name" label="profile_name"></el-table-column> -->
       <!-- <el-table-column prop="update_time" label="update_time"></el-table-column> -->
     </el-table>
-
+    <div style="width:100%;height:20px;text-align:center">
+      <p><a href="#" @click="loadNextPage()">load more</a></p>
+    </div>
     <el-dialog 
     title="正文" 
     :visible.sync="dialogVisible"  
@@ -88,22 +90,27 @@ export default {
   data() {
     return {
       article_content:'',
-      params: {},
+      params: {page:0},
       tableData: [],
       dialogVisible: false, //模态框是否显示
       addLoading: false //是否显示loading
     };
   },
   methods: {
+    loadNextPage:function() {
+      this.fetchList()
+    },
     opendialog: function() {
       //代开模态框
       this.dialogVisible = false;
     },
     fetchList: function() {
+      this.params.page++;
       getList(this.params).then(data => {
-        data.forEach(function(v) {
+        console.log(data)
+        data.results.forEach(function(v) {
           //v.title=url
-          v.media_content = eval(v.media_content);
+          v.media_content = eval(v.media_content);    
           if (v.media_content) {
             v.media_content.forEach(c => {
               if (typeof c.width == "undefined") c.width = "130";
@@ -111,7 +118,7 @@ export default {
             });
           }
         });
-        this.tableData = data;
+        this.tableData = data.results;
       });
     },
     showContent: function(content) {

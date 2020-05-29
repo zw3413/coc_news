@@ -15,22 +15,23 @@ import Article from './components/Article.vue'
 
 // 2. 定义路由
 const routes = [
-  { path: '/createProfile', component: ProfileMnage, meta:{title:'配置管理',icon:'el-icon-setting'} },
-  { path: '/article', component: Article, meta:{title:'文章列表',icon:'el-icon-document'} }
-]
-// 3. 创建 router 实例，然后传 `routes` 配置
+        { path: '/admin/createProfile', component: ProfileMnage, meta: { title: '配置管理', icon: 'el-icon-setting' } },
+        { path: '/admin/article', component: Article, meta: { title: '文章列表', icon: 'el-icon-document' } },
+        { path: '/page/article', component: Article, meta: { title: '文章列表', icon: 'el-icon-document' } }
+    ]
+    // 3. 创建 router 实例，然后传 `routes` 配置
 const router = new VueRouter({
-  routes // (缩写) 相当于 routes: routes
+    routes // (缩写) 相当于 routes: routes
 })
 
 
 new Vue({
-  router,
-  data:{
-    routes:routes
-  },
-  render: h => h(App),
-  methods:{
-    
-  }
+    router,
+    data: {
+        routes: routes
+    },
+    render: h => h(App),
+    methods: {
+
+    }
 }).$mount('#app')

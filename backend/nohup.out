@@ -1,0 +1,39 @@
+[DEBUG][2020-05-26 21:51:06,087][selector_events.py:54]Using selector: EpollSelector
+[DEBUG][2020-05-26 21:51:11,328][selector_events.py:54]Using selector: EpollSelector
+Watching for file changes with StatReloader
+[INFO][2020-05-26 21:51:11,609][autoreload.py:598]Watching for file changes with StatReloader
+[26/May/2020 21:56:33] "GET / HTTP/1.1" 200 5691
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/css/prettify.css HTTP/1.1" 200 817
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 200 3385
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/css/bootstrap.min.css HTTP/1.1" 200 121457
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/css/default.css HTTP/1.1" 200 1131
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/js/jquery-3.4.1.min.js HTTP/1.1" 200 88145
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/js/ajax-form.js HTTP/1.1" 200 3597
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/js/csrf.js HTTP/1.1" 200 1719
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/js/prettify-min.js HTTP/1.1" 200 13632
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/js/default.js HTTP/1.1" 200 1268
+[26/May/2020 21:56:33] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/js/bootstrap.min.js HTTP/1.1" 200 39680
+[26/May/2020 21:56:34] "GET /home/zhangw/Desktop/coc_news/backend/static/rest_framework/img/grid.png HTTP/1.1" 200 1458
+Not Found: /favicon.ico
+[WARNING][2020-05-26 21:56:35,305][log.py:228]Not Found: /favicon.ico
+[26/May/2020 21:56:35] "GET /favicon.ico HTTP/1.1" 404 4478
+[26/May/2020 21:58:34] "GET /article/?format=json HTTP/1.1" 200 1442115
+/home/zhangw/Desktop/coc_news/backend/yahoonews/settings.py changed, reloading.
+[INFO][2020-05-26 22:07:12,972][autoreload.py:222]/home/zhangw/Desktop/coc_news/backend/yahoonews/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+May 26, 2020 - 21:51:18
+Django version 3.0.4, using settings 'yahoonews.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[DEBUG][2020-05-26 22:07:19,715][selector_events.py:54]Using selector: EpollSelector
+Watching for file changes with StatReloader
+[INFO][2020-05-26 22:07:21,703][autoreload.py:598]Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+May 26, 2020 - 22:07:25
+Django version 3.0.4, using settings 'yahoonews.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.

@@ -26,7 +26,14 @@ export default {
   },
   computed: {
     routes() {
-      return this.$router.options.routes;
+      var r=[];
+      this.$router.options.routes.forEach((v)=>{
+        console.log(v.path)
+        if(v.path.indexOf("/admin")==0){
+          r.push(v)
+        }
+      })
+      return r;
     }
   }
 };
