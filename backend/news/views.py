@@ -30,16 +30,35 @@ headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/5
 def auto_task():
     print('auto task triggered')
     try:
+        pass
         #profile = Profile.objects.get(id=1)
         # urls=collect_url(profile)
         execCollectArticleViaRss()
         execFetchRssArticleContent()
         # collect_page(profile)
-        # execTranslate()
+        execTranslate()
     except:
         print(str(sys.exc_info()[0]))
         print(str(sys.exc_info()[1]))
         print(str(sys.exc_info()[2]))
+
+
+def test(request):
+    execCollectArticleViaRss()
+    execFetchRssArticleContent()
+    execTranslate()
+    # testResult=test_get_content_via_selector_and_link()
+    # execFetchRssArticleContent()
+
+    # testResult=[]
+    # articles=Article.getRssArticleWithoutContent()
+    # for a in articles:
+    #     testResult.append(a.toJSON())
+    # return HttpResponse(json.dumps(testResult),content_type="application/json,charset=utf-8")
+
+    return HttpResponse('成功', content_type="application/json,charset=utf-8")
+
+
 
 # 获取文章正文
 
@@ -53,7 +72,7 @@ def execFetchRssArticleContent():
 
 def execTranslate():
     print(now()+u'--执行自动翻译任务')
-    articles = Article.objects.filter(process_status=0)[:5]
+    articles = Article.objects.filter(process_status=1)[:5]
     for article in articles:
         # google
         # if notTranslatedWithEngine(article.guid, 'google'):
@@ -71,7 +90,7 @@ def execTranslate():
             zhArticle['guid']=article.guid
             a=Article_translation(**zhArticle)
             a.save()
-            article.process_status=1
+            article.process_status=2
             article.save()
             
 
@@ -126,19 +145,6 @@ def now():
     return time.asctime(time.localtime(time.time()))
 
 
-def test(request):
-    execTranslate()
-    # testResult=test_get_content_via_selector_and_link()
-    # execFetchRssArticleContent()
-
-    # testResult=[]
-    # articles=Article.getRssArticleWithoutContent()
-    # for a in articles:
-    #     testResult.append(a.toJSON())
-    # return HttpResponse(json.dumps(testResult),content_type="application/json,charset=utf-8")
-
-    return HttpResponse('成功', content_type="application/json,charset=utf-8")
-
 
 class ArticleTranslationViewSet(viewsets.ModelViewSet):
     queryset=Article_translation.objects.all()
@@ -153,8 +159,22 @@ class ArticleTranslationViewSet(viewsets.ModelViewSet):
         article_translation=Article_translation(**post_data)
         return self.create(request,*args,**kwargs) 
 
+# class ArticleViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     queryset=Article.objects.all().order_by('-update_time')
+#     serializer_class=ArticleSerializer
+#     def get(self,request,*args,**kwargs):
+#         return self.list(request,*args,**kwargs)
+
+#     def post(self,request,*args,**kwargs):
+#         post_data=request.data.dict()
+#         post_data.pop('csrfmiddlewaretoken')
+#         article_translation=Article_translation(**post_data)
+#         return self.create(request,*args,**kwargs) 
+
+
+
 class ArticleList(generics.ListCreateAPIView):
-    queryset = Article.objects.all().order_by('-update_time')
+    queryset = Article.objects.all().order_by('-pub_date')
     serializer_class = ArticleSerializer
     # filter_fields=('','')
 

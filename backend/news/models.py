@@ -9,7 +9,11 @@ class Article_Selector_Website(BaseModel):
     content_selector=models.CharField(max_length=200,default='',null=True,blank=True)
     
     def get_selector_by_url(url):
-        result= Article_Selector_Website.objects.get(website_url__contains = url ).getDict() 
+        result=None
+        try:
+            result= Article_Selector_Website.objects.get(website_url__icontains = url ).getDict() 
+        except:
+            pass
         return result
 
 
@@ -17,11 +21,11 @@ class Article_Selector_Website(BaseModel):
 class Article_translation(models.Model):
     guid=models.CharField(max_length=200,default='')
     title=models.CharField(max_length=200,default='')
-    summary=models.TextField(max_length=500000,default='')
-    description=models.TextField(max_length=50000,default='')
-    type=models.CharField(max_length=20,default='')
-    update_time=models.TimeField(auto_now=True)
-    content=models.TextField(max_length=5000000,default='')
+    summary=models.TextField(max_length=500000,default='',null=True)
+    description=models.TextField(max_length=50000,default='',null=True)
+    type=models.CharField(max_length=20,default='',null=True)
+    update_time=models.TimeField(auto_now=True,null=True)
+    content=models.TextField(max_length=5000000,default='',null=True)
 
 #RSS文章
 class Article(BaseModel):
@@ -37,7 +41,7 @@ class Article(BaseModel):
     media_content=models.CharField(max_length=2000,default='')
     media_text=models.TextField(max_length=50000,default='')
     profile_name=models.CharField(max_length=200,default='')
-    update_time=models.TimeField(auto_now=True)
+    update_time=models.DateTimeField(auto_now=True)
     process_status=models.IntegerField(default=0)
     content=models.TextField(max_length=5000000,default='')
     type=models.CharField(max_length=10,default='')
@@ -95,3 +99,9 @@ class Profile(BaseModel):
 
     def __str__(self):
         return self.title
+    
+    def get_content_selector_by_profile_name(profile_name):
+        try:
+            return Profile.objects.get(name__icontains=profile_name).getDict()
+        except:
+            return None

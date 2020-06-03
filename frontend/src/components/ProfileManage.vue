@@ -69,7 +69,7 @@ export default {
   methods: {
     deleteItem(row) {
       var name = row.name;
-      fetch("http://192.168.31.144:8000/deleteProfile?name=" + name)
+      fetch("http://139.196.142.70:8000/deleteProfile?name=" + name)
         .then(resp => resp.text())
         .then(json => {
           var result = JSON.parse(json);
@@ -99,7 +99,7 @@ export default {
         .then(result => {
           //console.log(result)
           //var data = JSON.parse(result);
-          var data=result
+          var data=result.results
           for (var i in data) {
             var val = data[i];
             var obj = {
@@ -118,7 +118,7 @@ export default {
     },
     onSubmit() {
       fetch(
-        "http://192.168.31.144:8000/saveProfile?" + this.urlEncode(this.form)
+        "http://139.196.142.70:8000/saveProfile?" + this.urlEncode(this.form)
       )
         .then(resp => resp.text())
         .then(json => {

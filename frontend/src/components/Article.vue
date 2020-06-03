@@ -1,5 +1,8 @@
 <template>
   <div style>
+  <div style="width:100%;height:20px;text-align:center">
+      <p><a href="#" @click="loadNextPage()">load more</a></p>
+    </div>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="media_content" label="media_content" width="200px">
         <template slot-scope="scope">
@@ -28,7 +31,7 @@
             &nbsp;&nbsp;&nbsp;&nbsp;
             <a
               v-if="scope.row.content && scope.row.content != ''"
-              @click="showContent(scope.row.content)"
+              @click="showArticle(scope.row)"
             >正文</a>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <a v-bind:href="scope.row.link" v-bind:title="scope.row.link" target="_blank">原文链接</a>
@@ -65,17 +68,22 @@
       <!-- <el-table-column prop="profile_name" label="profile_name"></el-table-column> -->
       <!-- <el-table-column prop="update_time" label="update_time"></el-table-column> -->
     </el-table>
-    <div style="width:100%;height:20px;text-align:center">
-      <p><a href="#" @click="loadNextPage()">load more</a></p>
-    </div>
+    
     <el-dialog 
     title="正文" 
     :visible.sync="dialogVisible"  
     width="90%"
   
     >
-      <div v-html="article_content">
-      </div>
+      <h2 v-html="article.title"></h2>
+      <div v-html="article.content"></div>
+      <ul >
+        <li v-for="translation in translations">
+          <span v-html="translation.type"></span>
+          <h2 v-html="translation.title"></h2>
+          <div v-html="translation.content"></div>
+        <li>
+      <ul>
       <!-- <div slot="footer" class="dialog-footer">
         <el-button @click.native="dialogVisible = false">取消</el-button>
         <el-button type="primary" :loading="addLoading">提交</el-button>
@@ -86,10 +94,12 @@
 <script>
 //import {urlEncode} from '../utils/common_util'
 import { getList } from "../api/article";
+import {getTranslationByGuid} from "../api/article";
 export default {
   data() {
     return {
-      article_content:'',
+      article:{},
+      translation:{},
       params: {page:0},
       tableData: [],
       dialogVisible: false, //模态框是否显示
@@ -107,7 +117,10 @@ export default {
     fetchList: function() {
       this.params.page++;
       getList(this.params).then(data => {
-        console.log(data)
+        if(typeof(data.results) =="undefined" ){
+            alert('没有更多的内容')
+        }else{
+        //console.log(data)
         data.results.forEach(function(v) {
           //v.title=url
           v.media_content = eval(v.media_content);    
@@ -118,11 +131,24 @@ export default {
             });
           }
         });
-        this.tableData = data.results;
+        this.tableData = data.results.concat(this.tableData);
+        console.log(this.tableData)
+        }
       });
     },
-    showContent: function(content) {
-      this.article_content=content
+    showArticle: function(row) {
+
+      this.article=row
+
+      getTranslationByGuid({guid:row.guid}}).then(data=>{
+         if(typeof(data.results) =="undefined" ){
+            alert('没有更多的内容')
+        }else{   
+          this.translations = data.results;
+          console.log(this.tableData)
+        }
+      })
+
       this.dialogVisible=true
       // this.$alert(content, "正文", {
       //   dangerouslyUseHTMLString: true,

@@ -23,6 +23,7 @@ from news.serializers import *
 
 router=routers.DefaultRouter()
 router.register(r'article_translation',ArticleTranslationViewSet)
+#router.register(r'article',ArticleViewSet)
 
 
 urlpatterns = [

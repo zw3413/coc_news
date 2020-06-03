@@ -54,15 +54,21 @@ def fetchRssArticleContent():
             link=article['link']
 
             selector=get_selector_via_source(article['source_url'])
-            if(not( any(selector) and len(selector)>0 ) ):
+            if selector==None or len(selector)==0:
                 res=urlparse(link)
-                selector=get_selector_via_source(res.scheme+'://'+res.netloc)        
+                selector=get_selector_via_source(res.scheme+'://'+res.netloc)
+            if selector==None or len(selector)==0:
+                selector=get_selector_via_profile(article['profile_name'])
+            if selector==None or len(selector)==0:
+                return                     
 
             content=get_article_content_via_selector_and_link(selector,link)
-            article['content']=content
-            a=Article(**article)
-            a.save()
-            logging.info("获取和保存文章正文成功"+article['title'])
+            if content != None and len(content)!=0:
+                article['content']=content
+                article['process_status']=1
+                a=Article(**article)
+                a.save()
+                logging.info("获取和保存文章正文成功"+article['title'])
     
 
 # 解析url
@@ -143,13 +149,16 @@ def get_article_content_via_selector_and_link(selector,link):
 def get_selector_via_source(url):
     from news.models import Article_Selector_Website
     try:
-        selector=Article_Selector_Website.get_selector_by_url(url)
-        logging.info("找到selector:"+url)
+        return Article_Selector_Website.get_selector_by_url(url)
     except:
-        selector=''
-        logging.error("未找到"+url+"的selector:"+str(sys.exc_info()[0]))
-    return selector
-    
+        return None
+
+def get_selector_via_profile(profile_name):
+    from news.models import Profile
+    try:
+        return Profile.get_content_selector_by_profile_name(profile_name)
+    except:
+        return None 
 
 def translate_english_to_Chinese(enText):
     #翻译引擎一：阿里翻译API
