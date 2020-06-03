@@ -1,10 +1,7 @@
 <template>
   <div id="app">
-    
     <admin/>
-
     <article/>
-
   </div>
 </template>
 

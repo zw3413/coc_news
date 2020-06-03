@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, filters, pagination, status,viewsets
+from rest_framework.pagination import PageNumberPagination
+
 from lxml import etree
 import requests
 from news.coc_news import *
@@ -12,7 +14,7 @@ import json
 import logging
 import time
 import sys
-
+sys.setrecursionlimit(1000000)
 headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36',
            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
            'accept-encoding': 'gzip, deflate, br',
@@ -149,15 +151,39 @@ def now():
 class ArticleTranslationViewSet(viewsets.ModelViewSet):
     queryset=Article_translation.objects.all()
     serializer_class=ArticleTranslationSerializer
-    
+    def list(self, request, *args, **kwargs):
+        guid=None
+        if(len(request.GET)>0):
+            guid=request.GET.get('guid')
+        if guid :
+            data = self.get_queryset().filter(guid__icontains=guid)
+            serialized_data = self.get_serializer(data, many=True)
+            return Response(serialized_data.data)
+        else :
+            data = self.get_queryset()
+            serialized_data = self.get_serializer(data, many=True)
+            return Response(serialized_data.data)
+             
     def get(self,request,*args,**kwargs):
-        return self.list(request,*args,**kwargs)
+        guid = request.GET('guid', None) # for GET requests
+        #print(u'打印参数')
+        #print(request.GET.urlencode())
+        if guid is not None:
+            data = self.get_queryset().filter(guid=guid)
+            serialized_data = self.get_serializer(data, many=True)
+            return Response(serialized_data.data)
+        else :
+            #print(u'打印参数2')
+            return self.list(request,*args,**kwargs)
 
     def post(self,request,*args,**kwargs):
         post_data=request.data.dict()
         post_data.pop('csrfmiddlewaretoken')
         article_translation=Article_translation(**post_data)
         return self.create(request,*args,**kwargs) 
+
+
+
 
 # class ArticleViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 #     queryset=Article.objects.all().order_by('-update_time')

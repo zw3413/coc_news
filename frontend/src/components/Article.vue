@@ -78,7 +78,7 @@
       <h2 v-html="article.title"></h2>
       <div v-html="article.content"></div>
       <ul >
-        <li v-for="translation in translations">
+        <li v-for="translation in translations" :key="translation.guid">
           <span v-html="translation.type"></span>
           <h2 v-html="translation.title"></h2>
           <div v-html="translation.content"></div>
@@ -99,7 +99,7 @@ export default {
   data() {
     return {
       article:{},
-      translation:{},
+      translations:{},
       params: {page:0},
       tableData: [],
       dialogVisible: false, //模态框是否显示
@@ -140,13 +140,15 @@ export default {
 
       this.article=row
 
-      getTranslationByGuid({guid:row.guid}}).then(data=>{
-         if(typeof(data.results) =="undefined" ){
-            alert('没有更多的内容')
-        }else{   
-          this.translations = data.results;
-          console.log(this.tableData)
-        }
+      getTranslationByGuid({guid:row.guid}).then(data=>{
+        //  if(typeof(data.results) =="undefined" ){
+        //     alert('没有更多的内容')
+        // }else{   
+        //   this.translations = data.results;
+        //   console.log(this.tableData)
+        // }
+        this.translations=data;
+        console.log(this.translations)
       })
 
       this.dialogVisible=true
@@ -170,5 +172,11 @@ li {
 }
 .article-content {
   width: 90% !important;
+}
+div {
+  padding:0 !important;
+}
+.el-dialog button{
+  display:none
 }
 </style>

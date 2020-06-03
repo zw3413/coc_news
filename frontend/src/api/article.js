@@ -10,6 +10,14 @@ export function getList(params) {
 
 }
 
+export function getTranslationByGuid(params){
+    return request({
+        url: 'http://139.196.142.70:8000/article_translation/?format=json',
+        method: 'get',
+        params
+    })
+
+}
 // export function getContent(title){
 //     return request({
 //         url:'http://192.168.19.128:8000/'
