@@ -24,7 +24,7 @@ class Article_translation(models.Model):
     summary=models.TextField(max_length=500000,default='',null=True)
     description=models.TextField(max_length=50000,default='',null=True)
     type=models.CharField(max_length=20,default='',null=True)
-    update_time=models.TimeField(auto_now=True,null=True)
+    update_time=models.DateTimeField(auto_now=True,null=True)
     content=models.TextField(max_length=5000000,default='',null=True)
 
 #RSS文章

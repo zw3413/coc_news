@@ -38,7 +38,7 @@ def auto_task():
         execCollectArticleViaRss()
         execFetchRssArticleContent()
         # collect_page(profile)
-        execTranslate()
+        # execTranslate()
     except:
         print(str(sys.exc_info()[0]))
         print(str(sys.exc_info()[1]))
@@ -46,8 +46,8 @@ def auto_task():
 
 
 def test(request):
-    execCollectArticleViaRss()
-    execFetchRssArticleContent()
+    #execCollectArticleViaRss()
+    #execFetchRssArticleContent()
     execTranslate()
     # testResult=test_get_content_via_selector_and_link()
     # execFetchRssArticleContent()
@@ -59,7 +59,6 @@ def test(request):
     # return HttpResponse(json.dumps(testResult),content_type="application/json,charset=utf-8")
 
     return HttpResponse('成功', content_type="application/json,charset=utf-8")
-
 
 
 # 获取文章正文
@@ -75,6 +74,9 @@ def execFetchRssArticleContent():
 def execTranslate():
     print(now()+u'--执行自动翻译任务')
     articles = Article.objects.filter(process_status=1)[:5]
+    if len(articles)<1 : 
+        print('没有待翻译的文章')
+        return
     for article in articles:
         # google
         # if notTranslatedWithEngine(article.guid, 'google'):
@@ -94,6 +96,8 @@ def execTranslate():
             a.save()
             article.process_status=2
             article.save()
+        else:
+            print(article.guid + '已经被ali翻译过了')
             
 
 def notTranslatedWithEngine(guid, engine):
@@ -103,7 +107,10 @@ def notTranslatedWithEngine(guid, engine):
     except:
         return True
     else:
-        return False
+        if(result.content is not None):
+            return False
+        else :
+            return True
 # 自动收集rss数据
 
 
@@ -155,14 +162,26 @@ class ArticleTranslationViewSet(viewsets.ModelViewSet):
         guid=None
         if(len(request.GET)>0):
             guid=request.GET.get('guid')
-        if guid :
-            data = self.get_queryset().filter(guid__icontains=guid)
-            serialized_data = self.get_serializer(data, many=True)
-            return Response(serialized_data.data)
-        else :
-            data = self.get_queryset()
-            serialized_data = self.get_serializer(data, many=True)
-            return Response(serialized_data.data)
+            engine=request.GET.get('engine')
+            if engine is None:
+                engine='ali'
+        if guid is not None:     
+            #没有的话先调用接口进行翻译
+            article=Article.objects.get(guid=guid)
+            if notTranslatedWithEngine(article.guid, engine):
+                zhArticle=translate_article_with_engine(article,engine)
+                zhArticle['type']=engine
+                zhArticle['guid']=article.guid
+                a=Article_translation(**zhArticle)
+                a.save()
+                article.process_status=2
+                article.save()
+            data = self.get_queryset().filter(guid__icontains=guid).filter(type=engine)
+            if(len(data)>0):        
+                serialized_data = self.get_serializer(data, many=True)
+                return Response(serialized_data.data)        
+        serialized_data = self.get_serializer({}, many=True)
+        return Response(serialized_data)
              
     def get(self,request,*args,**kwargs):
         guid = request.GET('guid', None) # for GET requests
@@ -200,7 +219,7 @@ class ArticleTranslationViewSet(viewsets.ModelViewSet):
 
 
 class ArticleList(generics.ListCreateAPIView):
-    queryset = Article.objects.all().order_by('-pub_date')
+    queryset = Article.objects.all().order_by('-update_time')
     serializer_class = ArticleSerializer
     # filter_fields=('','')
 
