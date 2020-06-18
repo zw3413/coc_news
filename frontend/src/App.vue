@@ -1,19 +1,20 @@
 <template>
   <div id="app">
-    <admin/>
-    <article/>
+    <router-view></router-view>
+    <!-- <admin/> -->
+    <!-- <article/> -->
   </div>
 </template>
 
 <script>
 //import HelloWorld from './components/HelloWorld.vue'
-import Admin from './components/Admin'
-export default {
-  name: 'App',
-  components: {
-    Admin
-  }
-}
+// import Admin from './components/Admin'
+// export default {
+//   name: 'App',
+//   components: {
+//     Admin
+//   }
+// }
 </script>
 
 <style>

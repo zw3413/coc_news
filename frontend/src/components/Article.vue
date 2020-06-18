@@ -77,13 +77,13 @@
     >
       <h2 v-html="article.title"></h2>
       <div v-html="article.content"></div>
-      <ul >
+      <ul>
         <li v-for="translation in translations" :key="translation.guid">
           <span v-html="translation.type"></span>
           <h2 v-html="translation.title"></h2>
           <div v-html="translation.content"></div>
-        <li>
-      <ul>
+        </li>
+      </ul>
       <!-- <div slot="footer" class="dialog-footer">
         <el-button @click.native="dialogVisible = false">取消</el-button>
         <el-button type="primary" :loading="addLoading">提交</el-button>

@@ -26,13 +26,18 @@ export default {
   },
   computed: {
     routes() {
-      var r=[];
-      this.$router.options.routes.forEach((v)=>{
-        console.log(v.path)
-        if(v.path.indexOf("/admin")==0){
-          r.push(v)
+      var r = [];
+      this.$router.options.routes.forEach(v => {
+        //console.log(v.path)
+        if (v.path.indexOf("/admin") == 0) {
+          v.children.forEach(v1 => {
+            console.log(v1.path);
+            r.push(v1);
+          });
+          // console.log(v.path)
+          // r.push(v)
         }
-      })
+      });
       return r;
     }
   }

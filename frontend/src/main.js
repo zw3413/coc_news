@@ -12,14 +12,34 @@ Vue.config.productionTip = false
 // 1. 定义 (路由) 组件。
 import ProfileMnage from './components/ProfileManage.vue'
 import Article from './components/Article.vue'
-
+import Admin from './components/Admin'
 // 2. 定义路由
 const routes = [
-        { path: '/admin/createProfile', component: ProfileMnage, meta: { title: '配置管理', icon: 'el-icon-setting' } },
-        { path: '/admin/article', component: Article, meta: { title: '文章列表', icon: 'el-icon-document' } },
-        { path: '/page/article', component: Article, meta: { title: '文章列表', icon: 'el-icon-document' } }
-    ]
-    // 3. 创建 router 实例，然后传 `routes` 配置
+    { path: '/article', component: Article },
+    {
+        path: '/admin', component: Admin,
+        children: [
+            {
+                path: 'profile',
+                component: ProfileMnage,
+                meta:{
+                    title:'Profile'
+                }
+            },
+            {
+                path: 'article',
+                component: Article,
+                meta:{
+                    title:'Article'
+                }
+            }
+        ]
+    },
+    // { path: '/admin/createProfile', component: ProfileMnage, meta: { title: '配置管理', icon: 'el-icon-setting' } },
+    // { path: '/admin/article', component: Article, meta: { title: '文章列表', icon: 'el-icon-document' } },
+    // { path: '/page/article', component: Article, meta: { title: '文章列表', icon: 'el-icon-document' } }
+]
+// 3. 创建 router 实例，然后传 `routes` 配置
 const router = new VueRouter({
     routes // (缩写) 相当于 routes: routes
 })

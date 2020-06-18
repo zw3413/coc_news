@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header>Yahoo News</el-header>
+    <el-header>听见花开ListenFlower</el-header>
     <el-container>
       <el-aside width="200px">
         <Aside/>
