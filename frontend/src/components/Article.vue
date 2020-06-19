@@ -122,8 +122,13 @@ export default {
       this.has_log = 1;
       let innerHeight = document.querySelector("#media").clientHeight;
       let outerHeight = document.documentElement.clientHeight;
-      if(this.lastScrollTop>-1){
-        document.documentElement.scrollTop=this.lastScrollTop;
+     if(this.lastScrollTop>-1){
+        if(document && document.documentElement && document.documentElement.scrollTop){
+        document.documentElement.scrollTop=this.lastScrollTop;}
+        if(document&& document.body && document.body.scrollTop){
+        document.body.scrollTop=this.lastScrollTop;}
+        if(window&& window.pageYOffset){
+        window.pageYOffset=this.lastScrollTop;}
         this.lastScrollTop=-1;
       }
       let scrollTop =
