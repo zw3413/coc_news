@@ -8,6 +8,7 @@ import json
 import logging
 import sys
 from news.coc_news_translate import *
+from news.coc_news_util import *
 
 headers= {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36',
 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -43,13 +44,13 @@ def translate_article_with_engine(enArticle,engine):
                 zhArticle[f.name]=translate_by_bing(enArticle.__getattribute__(f.name) )
     return zhArticle
 
-def fetchRssArticleContent():
+def fetchRssArticleContentAndTranslateTitle():
     from news.models import Article
     from urllib.parse import urlparse
     #获取尚未获取正文的RSS文章列表
     articles=Article.getRssArticleWithoutContent()
     for article in articles:
-        #只处理有link字段的article,
+        #只处理有link字段的article,link字段指向正文页面，在正文页面提取文章内容
         if(('link' in article) and  ( len(article['link'])>0 )):
             link=article['link']
 
@@ -64,12 +65,32 @@ def fetchRssArticleContent():
 
             content=get_article_content_via_selector_and_link(selector,link)
             if content != None and len(content)!=0:
-                article['content']=content
-                article['process_status']=1
-                a=Article(**article)
-                a.save()
-                logging.info("获取和保存文章正文成功"+article['title'])
-    
+                 #翻译文档标题
+                title=article['title']
+                from news.coc_news_translate import translate_by_google 
+                zhTitle=translate_by_google(title)
+                article['zh_title']=zhTitle
+                #过滤content
+                try:
+                    def cleanContent(content):
+                        import re
+                        pattern=r'<a.*?>|</a>|<ul.*>.*</ul>|<button.*?/button>'
+                        cleanedContent=re.sub(pattern,'',content)
+                        return cleanedContent
+                    article['content']=cleanContent(content)
+                    article['process_status']=1
+                    a=Article(**article)
+                    a.save()
+                    print(now()+u"--获取和保存文章正文成功"+article['title'])
+                except:
+                    print(str(sys.exc_info()[0]))
+                    print(str(sys.exc_info()[1]))
+                    print(str(sys.exc_info()[2]))
+                    print(now()+u'--获取和保存文章正文失败'+article['title'])
+             
+                
+       
+        
 
 # 解析url
 def collect_url(profile,mode="css"):

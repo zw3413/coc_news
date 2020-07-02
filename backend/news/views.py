@@ -14,6 +14,8 @@ import json
 import logging
 import time
 import sys
+from news.coc_news_util import *
+
 sys.setrecursionlimit(1000000)
 headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36',
            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -36,7 +38,7 @@ def auto_task():
         #profile = Profile.objects.get(id=1)
         # urls=collect_url(profile)
         execCollectArticleViaRss()
-        execFetchRssArticleContent()
+        execFetchRssArticleContentAndTranslateTitle()
         # collect_page(profile)
         # execTranslate()
     except:
@@ -48,25 +50,29 @@ def auto_task():
 def test(request):
     #execCollectArticleViaRss()
     #execFetchRssArticleContent()
-    execTranslate()
+    #execTranslate()
     # testResult=test_get_content_via_selector_and_link()
     # execFetchRssArticleContent()
-
+    execFetchRssArticleContentAndTranslateTitle()
     # testResult=[]
     # articles=Article.getRssArticleWithoutContent()
     # for a in articles:
     #     testResult.append(a.toJSON())
     # return HttpResponse(json.dumps(testResult),content_type="application/json,charset=utf-8")
 
+    testTranslateByGoogle()
     return HttpResponse('成功', content_type="application/json,charset=utf-8")
 
-
+def testTranslateByGoogle():
+    from news.coc_news_translate import translate_by_google
+    result= translate_by_google('love')
+    print(result)
 # 获取文章正文
 
 
-def execFetchRssArticleContent():
+def execFetchRssArticleContentAndTranslateTitle():
     print(now()+u'--执行获取文章正文任务')
-    fetchRssArticleContent()
+    fetchRssArticleContentAndTranslateTitle()
 
 # 自动翻译
 
@@ -124,10 +130,13 @@ def execCollectArticleViaRss():
     temp.close()
     # 持久化
     for article in articles:
+        title = article.title if ('title' in article) else ''
+        from html import unescape
+        title=unescape(title)
         try:
             aJson = {
                 'guid': article.id if ('guid' in article) else (article['id'] if ('id' in article) else ''),
-                'title': article.title if ('title' in article) else '',
+                'title': title,
                 'summary': article.summary if ('summary' in article) else '',
                 'description': article.description if ('description' in article) else '',
                 'link': article.link if ('link' in article) else '',
@@ -142,7 +151,6 @@ def execCollectArticleViaRss():
         except:
             return u'解析失败:' + str(sys.exc_info()[0])
         else:
-            title = article.title
             if(len(Article.objects.filter(title=title)) == 0):
                 a = Article(**aJson)
                 a.save()
@@ -150,8 +158,7 @@ def execCollectArticleViaRss():
     return articles
 
 
-def now():
-    return time.asctime(time.localtime(time.time()))
+
 
 
 

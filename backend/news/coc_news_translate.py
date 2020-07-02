@@ -17,28 +17,29 @@ youdaoEngine='http://fanyi.youdao.com/translate?&doctype=json&type=AUTO&i='
 def translate_by_google(enText):
     def resolveGoogle(res):
         j={}
+        result=''
         try:
             j=json.loads(res)
         except:
             print('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
             print(res)
-        else:
-            j['sentences']=[]
-        result=''
-        if len(j['sentences'])>0:
-            for sentence in j['sentences']:
-                result=result+'\n'+sentence['trans']
-            result=result[1:len(result)]    
+            j['sentences']=[]    
+        else:    
+            if len(j['sentences'])>0:
+                for sentence in j['sentences']:
+                    result=result+'\n'+sentence['trans']
+                result=result[1:len(result)]    
         return result
     engine=googleEngine
     enText_list=split_text(enText,5000)
     result=''
     for t in enText_list:
-        url=engine+t
-        headers={'user-agent': 'Mozilla/5.0'}
-        res=requests.get(url,headers=headers)
-        res.encoding="UTF-8"
-        result= result+resolveGoogle(res.text)
+        if(t is not None and len(t)>0):
+            url=engine+t
+            headers={'user-agent': 'Mozilla/5.0'}
+            res=requests.get(url,headers=headers)
+            res.encoding="UTF-8"
+            result= result+resolveGoogle(res.text)
     return result
 
 def translate_by_bing(enText):

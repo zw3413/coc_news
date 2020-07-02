@@ -30,7 +30,8 @@ class Article_translation(models.Model):
 #RSS文章
 class Article(BaseModel):
     #id=models.CharField(max_length=200,default='',primary_key=True)
-    title=models.CharField(max_length=200,default='')
+    title=models.CharField(max_length=500,default='')
+    zh_title=models.CharField(max_length=500,default='')
     summary=models.TextField(max_length=500000,default='')
     description=models.TextField(max_length=50000,default='')
     link=models.CharField(max_length=1000,default='')

@@ -14,3 +14,7 @@ def split_text(text, length):
     else:
         split_text(text, length)
     return text_list
+
+def now():
+    import time
+    return time.asctime(time.localtime(time.time()))

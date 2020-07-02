@@ -30,8 +30,9 @@
         <template slot-scope="scope">
           <p>
             <a @click="showArticle(scope.row)">{{scope.row.title}}</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            
             <br/>
+            <a @click="showArticle(scope.row)">{{scope.row.zh_title}}</a>
             <!-- <a
               v-if="scope.row.content && scope.row.content != ''"
               @click="showArticle(scope.row)"
@@ -225,6 +226,15 @@ export default {
 };
 </script>
 <style>
+img {
+  width:100%;
+}
+.el-dialog__body{
+  padding:0 5px;
+}
+.el-dialog__body div{
+  padding: 0 !important;
+}
 li {
   list-style-type: none;
 }
@@ -232,7 +242,7 @@ li {
   width: 90% !important;
 }
 div {
-  padding: 0 !important;
+  padding: 0 ;
 }
 
 body, #app, ul, li {
