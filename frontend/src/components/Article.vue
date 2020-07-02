@@ -104,6 +104,7 @@
 //import {urlEncode} from '../utils/common_util'
 import { getList } from "../api/article";
 import { getTranslationByGuid } from "../api/article";
+import {translateByYoudao} from '../utils/translate_util';
 export default {
   data() {
     return {
@@ -222,6 +223,13 @@ export default {
   mounted: function() {
     this.fetchList();
      window.addEventListener('scroll', this.onScroll);
+  },
+  watch:{
+    tableData:function(v){
+      v.forEach((v,i)=>{
+        
+      })
+    }
   }
 };
 </script>
