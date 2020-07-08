@@ -67,9 +67,9 @@ def testTranslateByGoogle():
     from news.coc_news_translate import translate_by_google
     result= translate_by_google('love')
     print(result)
+
+
 # 获取文章正文
-
-
 def execFetchRssArticleContentAndTranslateTitle():
     print(now()+u'--执行获取文章正文任务')
     fetchRssArticleContentAndTranslateTitle()

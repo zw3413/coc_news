@@ -7,6 +7,7 @@ import feedparser
 import json
 import logging
 import sys
+import traceback
 from news.coc_news_translate import *
 from news.coc_news_util import *
 
@@ -68,7 +69,10 @@ def fetchRssArticleContentAndTranslateTitle():
                  #翻译文档标题
                 title=article['title']
                 from news.coc_news_translate import translate_by_google 
-                zhTitle=translate_by_google(title)
+                # zhTitle=translate_by_google(title)
+                zhTitle=translate_by_ali(title)
+                from html import unescape
+                zhTitle=unescape(zhTitle)
                 article['zh_title']=zhTitle
                 #过滤content
                 try:
@@ -83,9 +87,8 @@ def fetchRssArticleContentAndTranslateTitle():
                     a.save()
                     print(now()+u"--获取和保存文章正文成功"+article['title'])
                 except:
-                    print(str(sys.exc_info()[0]))
-                    print(str(sys.exc_info()[1]))
-                    print(str(sys.exc_info()[2]))
+                    exc_type, exc_value, exc_obj = sys.exc_info()
+                    traceback.print_tb(exc_obj)
                     print(now()+u'--获取和保存文章正文失败'+article['title'])
              
                 
@@ -159,7 +162,7 @@ def get_article_content_via_selector_and_link(selector,link):
     else:
         print('没有检测到正文选择器:'+link)  
 
-    if(str(type(content))== "<class 'bs4.element.ResultSet'>"):
+    if(str(type(content))== "<class 'bs4.element.ResultSet'>" or str(type(content))=="<class 'list'>"):
         for c in content:
             result = result + str(c)
     else:

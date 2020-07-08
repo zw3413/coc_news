@@ -45,7 +45,7 @@
             >原文链接</a> -->
           </p>
           <p>
-            <span>{{scope.row.pub_date}}</span>
+            <span>{{scope.row.pdStr}}</span>
           </p>
           <!-- <p>
             <a
@@ -104,7 +104,6 @@
 //import {urlEncode} from '../utils/common_util'
 import { getList } from "../api/article";
 import { getTranslationByGuid } from "../api/article";
-import {translateByYoudao} from '../utils/translate_util';
 export default {
   data() {
     return {
@@ -181,6 +180,9 @@ export default {
                 if (typeof c.height == "undefined") c.height = "90";
               });
             }
+            var pd=new Date(v.pub_date)
+            var pdStr=pd.getFullYear()+"年"+(pd.getMonth()+1)+"月"+pd.getDate()+"日"
+            v.pdStr=pdStr
           });
           if(append){
             //this.tableData = data.results.concat(this.tableData);
@@ -223,13 +225,6 @@ export default {
   mounted: function() {
     this.fetchList();
      window.addEventListener('scroll', this.onScroll);
-  },
-  watch:{
-    tableData:function(v){
-      v.forEach((v,i)=>{
-        
-      })
-    }
   }
 };
 </script>
