@@ -20,6 +20,7 @@ from rest_framework import routers
 from news.views import *
 from news.serializers import *
 
+from news.video.mp3_util import upload_file
 
 router=routers.DefaultRouter()
 router.register(r'article_translation',ArticleTranslationViewSet)
@@ -30,6 +31,7 @@ urlpatterns = [
     path('',include(router.urls)),
     path('admin/', admin.site.urls),
     path('test/',test),
+    path('upload/mp3',upload_file),
     path('profile/', ProfileList.as_view(), name='profile_list'),
     re_path('profile/(?P<pk>[0-9]+)/', ProfileDetail.as_view(), name='profile_detail'),
     path('pageen/', PageENList.as_view(), name='pageen_list'),
