@@ -6,6 +6,8 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 Vue.config.productionTip = false
+import axios from 'axios'
+Vue.prototype.$axios=axios
 
 
 //配置路由
@@ -13,6 +15,7 @@ Vue.config.productionTip = false
 import ProfileMnage from './components/ProfileManage.vue'
 import Article from './components/Article.vue'
 import Admin from './components/Admin'
+import VideoTool from './components/VideoTool'
 // 2. 定义路由
 const routes = [
     { path: '/article', component: Article },
@@ -20,17 +23,24 @@ const routes = [
         path: '/admin', component: Admin,
         children: [
             {
-                path: 'profile',
+                path: '/admin/profile',
                 component: ProfileMnage,
                 meta:{
                     title:'Profile'
                 }
             },
             {
-                path: 'article',
+                path: '/admin/article',
                 component: Article,
                 meta:{
                     title:'Article'
+                }
+            },
+            {
+                path:'/admin/videotool',
+                component:VideoTool,
+                meta:{
+                    title:'VideoTool'
                 }
             }
         ]
