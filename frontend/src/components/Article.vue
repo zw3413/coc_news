@@ -224,7 +224,7 @@ export default {
   computed: {},
   mounted: function() {
     this.fetchList();
-     window.addEventListener('scroll', this.onScroll);
+     window.addEventListener('scroll', this.onScroll); 
   }
 };
 </script>

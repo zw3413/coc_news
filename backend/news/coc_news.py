@@ -80,6 +80,8 @@ def fetchRssArticleContentAndTranslateTitle():
                         import re
                         pattern=r'<a.*?>|</a>|<ul.*>.*</ul>|<button.*?/button>'
                         cleanedContent=re.sub(pattern,'',content)
+                        p1='data-src'
+                        cleanedContent=re.sub(p1,'src',cleanedContent)
                         return cleanedContent
                     article['content']=cleanContent(content)
                     article['process_status']=1
