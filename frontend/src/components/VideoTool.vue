@@ -30,7 +30,8 @@ export default {
       //http://cloudbed.cn/#/admin/upload/mp3
       //视频上传
       self.upload_url = "http://cloudbed.cn:8000/upload/mp3";
-      self.upload_name = "sound";
+      //self.upload_url = "http://127.0.0.1:8000/upload/mp3";
+      self.upload_name = "file";
       self.uploadFile(file);
     },
 
